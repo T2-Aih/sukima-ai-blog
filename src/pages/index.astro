@@ -5,10 +5,25 @@ import Header from '../components/Header.astro';
 import { SITE_DESCRIPTION, SITE_TITLE } from '../consts';
 import { getCollection } from 'astro:content';
 import FormattedDate from '../components/FormattedDate.astro';
+import * as LucideIcons from '@lucide/astro';
 
 const posts = (await getCollection('blog')).sort(
 	(a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
 );
+
+// Convert icon names to PascalCase for Lucide
+function toPascalCase(str: string): string {
+	return str
+		.split('-')
+		.map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+		.join('');
+}
+
+// Get icon component by name
+function getIconComponent(name: string) {
+	const pascalName = toPascalCase(name);
+	return (LucideIcons as Record<string, any>)[pascalName];
+}
 ---
 
 <!doctype html>
@@ -25,16 +40,32 @@ const posts = (await getCollection('blog')).sort(
 					<span class="badge">📖 5分で読んで ⚡ 10分で実践</span>
 				</div>
 				<div class="post-grid">
-					{posts.map((post) => (
-						<a href={`/blog/${post.id}/`} class="post-card">
-							<span class="post-date">
-								<FormattedDate date={post.data.pubDate} />
-							</span>
-							<h2 class="post-title">{post.data.title}</h2>
-							<p class="post-desc">{post.data.description}</p>
-							<span class="post-link">読む →</span>
-						</a>
-					))}
+					{posts.map((post) => {
+						const icons = post.data.icons || [];
+						const iconComponents = icons.slice(0, 3).map(name => getIconComponent(name)).filter(Boolean);
+						
+						return (
+							<a href={`/blog/${post.id}/`} class="post-card">
+								{iconComponents.length > 0 && (
+									<div class="post-icons">
+										{iconComponents.map((IconComponent) => (
+											<div class="icon-wrapper">
+												<IconComponent size={24} strokeWidth={1.5} />
+											</div>
+										))}
+									</div>
+								)}
+								<div class="post-content">
+									<span class="post-date">
+										<FormattedDate date={post.data.pubDate} />
+									</span>
+									<h2 class="post-title">{post.data.title}</h2>
+									<p class="post-desc">{post.data.description}</p>
+									<span class="post-link">読む →</span>
+								</div>
+							</a>
+						);
+					})}
 				</div>
 			</section>
 
@@ -93,8 +124,10 @@ const posts = (await getCollection('blog')).sort(
 	}
 	
 	.post-card {
-		display: block;
-		padding: 1.5rem;
+		display: flex;
+		align-items: stretch;
+		gap: 1.25rem;
+		padding: 1.25rem;
 		background: var(--surface);
 		border: 1px solid var(--border);
 		border-radius: var(--radius-md);
@@ -106,6 +139,40 @@ const posts = (await getCollection('blog')).sort(
 		border-color: var(--accent);
 		transform: translateY(-2px);
 		box-shadow: var(--shadow-md);
+	}
+	
+	.post-icons {
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+		gap: 0.5rem;
+		padding-right: 1.25rem;
+		border-right: 1px solid var(--border-light);
+	}
+	
+	.icon-wrapper {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		width: 44px;
+		height: 44px;
+		border-radius: var(--radius-sm);
+		background: var(--bg);
+		border: 1px solid var(--border);
+		color: var(--accent);
+		transition: all 0.2s ease;
+	}
+	
+	.post-card:hover .icon-wrapper {
+		border-color: var(--accent);
+		background: var(--accent-light);
+	}
+	
+	.post-content {
+		flex: 1;
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
 	}
 	
 	.post-date {
@@ -131,6 +198,21 @@ const posts = (await getCollection('blog')).sort(
 		font-size: 0.9rem;
 		color: var(--accent);
 		font-weight: 500;
+	}
+	
+	/* Mobile: icons on top */
+	@media (max-width: 480px) {
+		.post-card {
+			flex-direction: column;
+		}
+		
+		.post-icons {
+			flex-direction: row;
+			padding-right: 0;
+			padding-bottom: 1rem;
+			border-right: none;
+			border-bottom: 1px solid var(--border-light);
+		}
 	}
 	
 	/* About Brief */
