@@ -46,15 +46,6 @@ function getIconComponent(name: string) {
 						
 						return (
 							<a href={`/blog/${post.id}/`} class="post-card">
-								{iconComponents.length > 0 && (
-									<div class="post-icons">
-										{iconComponents.map((IconComponent) => (
-											<div class="icon-wrapper">
-												<IconComponent size={24} strokeWidth={1.5} />
-											</div>
-										))}
-									</div>
-								)}
 								<div class="post-content">
 									<span class="post-date">
 										<FormattedDate date={post.data.pubDate} />
@@ -62,6 +53,17 @@ function getIconComponent(name: string) {
 									<h2 class="post-title">{post.data.title}</h2>
 									<p class="post-desc">{post.data.description}</p>
 									<span class="post-link">読む →</span>
+								</div>
+								<div class="post-visual">
+									{iconComponents.length > 0 && (
+										<div class="post-icons">
+											{iconComponents.map((IconComponent) => (
+												<div class="icon-wrapper">
+													<IconComponent size={20} strokeWidth={1.5} />
+												</div>
+											))}
+										</div>
+									)}
 								</div>
 							</a>
 						);
@@ -123,12 +125,13 @@ function getIconComponent(name: string) {
 		gap: 1rem;
 	}
 	
-	/* Mobile first: vertical layout */
+	/* Mobile first: horizontal layout (text left, visual right) */
 	.post-card {
 		display: flex;
-		flex-direction: column;
+		flex-direction: row;
+		align-items: stretch;
 		gap: 1rem;
-		padding: 1.25rem;
+		padding: 1rem;
 		background: var(--surface);
 		border: 1px solid var(--border);
 		border-radius: var(--radius-md);
@@ -142,80 +145,95 @@ function getIconComponent(name: string) {
 		box-shadow: var(--shadow-md);
 	}
 	
-	/* Mobile: icons horizontal on top */
+	.post-content {
+		flex: 1;
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+		min-width: 0;
+	}
+	
+	.post-date {
+		font-size: 0.75rem;
+		color: var(--text-muted);
+	}
+	
+	.post-title {
+		margin: 0.25rem 0;
+		font-size: 1rem;
+		color: var(--text-primary);
+		line-height: 1.4;
+	}
+	
+	.post-desc {
+		margin: 0.25rem 0;
+		font-size: 0.85rem;
+		color: var(--text-secondary);
+		line-height: 1.5;
+		display: -webkit-box;
+		-webkit-line-clamp: 2;
+		-webkit-box-orient: vertical;
+		overflow: hidden;
+	}
+	
+	.post-link {
+		font-size: 0.8rem;
+		color: var(--accent);
+		font-weight: 500;
+		margin-top: 0.25rem;
+	}
+	
+	/* Visual illustration area (right side) */
+	.post-visual {
+		flex-shrink: 0;
+		width: 80px;
+		height: 80px;
+		border-radius: var(--radius-sm);
+		overflow: hidden;
+		background: var(--accent-light);
+		display: flex;
+		align-items: center;
+		justify-content: center;
+	}
+	
+	.post-visual img {
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+	}
+	
+	/* Fallback icons when no image */
 	.post-icons {
 		display: flex;
-		flex-direction: row;
-		gap: 0.5rem;
-		padding-bottom: 1rem;
-		border-bottom: 1px solid var(--border-light);
+		flex-direction: column;
+		gap: 0.25rem;
+		color: var(--accent);
 	}
 	
 	.icon-wrapper {
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		width: 44px;
-		height: 44px;
-		border-radius: var(--radius-sm);
-		background: var(--bg);
-		border: 1px solid var(--border);
-		color: var(--accent);
-		transition: all 0.2s ease;
 	}
 	
-	.post-card:hover .icon-wrapper {
-		border-color: var(--accent);
-		background: var(--accent-light);
-	}
-	
-	.post-content {
-		flex: 1;
-		display: flex;
-		flex-direction: column;
-		justify-content: center;
-	}
-	
-	.post-date {
-		font-size: 0.8rem;
-		color: var(--text-muted);
-	}
-	
-	.post-title {
-		margin: 0.5rem 0;
-		font-size: 1.2rem;
-		color: var(--text-primary);
-		line-height: 1.4;
-	}
-	
-	.post-desc {
-		margin: 0.5rem 0;
-		font-size: 0.95rem;
-		color: var(--text-secondary);
-		line-height: 1.6;
-	}
-	
-	.post-link {
-		font-size: 0.9rem;
-		color: var(--accent);
-		font-weight: 500;
-	}
-	
-	/* Desktop: horizontal layout (icons left, text right) */
+	/* Desktop: larger visual */
 	@media (min-width: 600px) {
 		.post-card {
-			flex-direction: row;
-			align-items: stretch;
+			padding: 1.25rem;
 			gap: 1.25rem;
 		}
 		
-		.post-icons {
-			flex-direction: column;
-			justify-content: center;
-			padding-bottom: 0;
-			padding-right: 1.25rem;
-			border-bottom: none;
-			border-right: 1px solid var(--border-light);
+		.post-title {
+			font-size: 1.1rem;
+		}
+		
+		.post-desc {
+			font-size: 0.9rem;
+		}
+		
+		.post-visual {
+			width: 100px;
+			height: 100px;
 		}
 	}
 	
