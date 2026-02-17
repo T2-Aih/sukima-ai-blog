@@ -1,0 +1,186 @@
+---
+import { Image } from 'astro:assets';
+import FormattedDate from './FormattedDate.astro';
+import * as LucideIcons from '@lucide/astro';
+
+interface Props {
+	href: string;
+	title: string;
+	pubDate: Date;
+	heroImage?: ImageMetadata;
+	icons?: string[];
+	featured?: boolean;
+}
+
+const { href, title, pubDate, heroImage, icons = [], featured = false } = Astro.props;
+
+// Convert icon names to PascalCase for Lucide
+function toPascalCase(str: string): string {
+	return str
+		.split('-')
+		.map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+		.join('');
+}
+
+// Get icon components
+const iconComponents = icons.slice(0, 3).map(name => {
+	const pascalName = toPascalCase(name);
+	return (LucideIcons as Record<string, any>)[pascalName];
+}).filter(Boolean);
+---
+
+<article class:list={['article-card', { featured }]}>
+	<a href={href}>
+		<div class="card-content">
+			<div class="card-text">
+				{heroImage && (
+					<div class="card-image">
+						<Image 
+							width={featured ? 720 : 320} 
+							height={featured ? 360 : 160} 
+							src={heroImage} 
+							alt="" 
+						/>
+					</div>
+				)}
+				<h4 class="title">{title}</h4>
+				<p class="date">
+					<FormattedDate date={pubDate} />
+				</p>
+			</div>
+			
+			{iconComponents.length > 0 && (
+				<div class="card-icons">
+					{iconComponents.map((IconComponent) => (
+						<div class="icon-wrapper">
+							<IconComponent size={28} strokeWidth={1.5} />
+						</div>
+					))}
+				</div>
+			)}
+		</div>
+	</a>
+</article>
+
+<style>
+	.article-card {
+		background: var(--surface);
+		border: 1px solid var(--border);
+		border-radius: var(--radius-md);
+		overflow: hidden;
+		transition: all 0.2s ease;
+	}
+	
+	.article-card:hover {
+		border-color: var(--accent);
+		box-shadow: var(--shadow-md);
+	}
+	
+	.article-card a {
+		display: block;
+		text-decoration: none;
+		color: inherit;
+	}
+	
+	.card-content {
+		display: flex;
+		align-items: stretch;
+		gap: 1rem;
+	}
+	
+	.card-text {
+		flex: 1;
+		padding: 1.25rem;
+		display: flex;
+		flex-direction: column;
+	}
+	
+	.card-image {
+		margin-bottom: 0.75rem;
+	}
+	
+	.card-image img {
+		width: 100%;
+		height: auto;
+		border-radius: var(--radius-sm);
+	}
+	
+	.title {
+		margin: 0 0 0.5rem 0;
+		font-size: 1.1rem;
+		font-weight: 600;
+		color: var(--text-primary);
+		line-height: 1.4;
+		transition: color 0.2s ease;
+	}
+	
+	.article-card:hover .title {
+		color: var(--accent);
+	}
+	
+	.date {
+		margin: 0;
+		font-size: 0.875rem;
+		color: var(--text-muted);
+	}
+	
+	.card-icons {
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+		gap: 0.75rem;
+		padding: 1.25rem 1.5rem 1.25rem 0;
+		border-left: 1px solid var(--border-light);
+		background: var(--bg);
+	}
+	
+	.icon-wrapper {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		width: 48px;
+		height: 48px;
+		border-radius: var(--radius-sm);
+		background: var(--surface);
+		border: 1px solid var(--border);
+		color: var(--accent);
+		transition: all 0.2s ease;
+	}
+	
+	.article-card:hover .icon-wrapper {
+		border-color: var(--accent);
+		background: var(--accent-light);
+	}
+	
+	/* Featured card */
+	.featured .card-content {
+		flex-direction: column;
+	}
+	
+	.featured .card-icons {
+		flex-direction: row;
+		border-left: none;
+		border-top: 1px solid var(--border-light);
+		padding: 1rem 1.25rem;
+		justify-content: flex-start;
+	}
+	
+	.featured .title {
+		font-size: 1.5rem;
+	}
+	
+	/* Responsive */
+	@media (max-width: 720px) {
+		.card-content {
+			flex-direction: column;
+		}
+		
+		.card-icons {
+			flex-direction: row;
+			border-left: none;
+			border-top: 1px solid var(--border-light);
+			padding: 1rem 1.25rem;
+			justify-content: flex-start;
+		}
+	}
+</style>

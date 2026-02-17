@@ -13,6 +13,8 @@ const blog = defineCollection({
 			pubDate: z.coerce.date(),
 			updatedDate: z.coerce.date().optional(),
 			heroImage: image().optional(),
+			// Icons for visual summary (max 3, Lucide icon names)
+			icons: z.array(z.string()).max(3).optional(),
 		}),
 });
 

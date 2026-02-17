@@ -6,53 +6,21 @@ import Footer from '../components/Footer.astro';
 import FormattedDate from '../components/FormattedDate.astro';
 import Header from '../components/Header.astro';
 
-type Props = CollectionEntry<'blog'>['data'];
+interface Props {
+	title: string;
+	description: string;
+	pubDate: Date;
+	updatedDate?: Date;
+	heroImage?: ImageMetadata;
+	relatedPosts?: CollectionEntry<'blog'>[];
+}
 
-const { title, description, pubDate, updatedDate, heroImage } = Astro.props;
+const { title, description, pubDate, updatedDate, heroImage, relatedPosts = [] } = Astro.props;
 ---
 
-<html lang="en">
+<html lang="ja">
 	<head>
 		<BaseHead title={title} description={description} />
-		<style>
-			main {
-				width: calc(100% - 2em);
-				max-width: 100%;
-				margin: 0;
-			}
-			.hero-image {
-				width: 100%;
-			}
-			.hero-image img {
-				display: block;
-				margin: 0 auto;
-				border-radius: 12px;
-				box-shadow: var(--box-shadow);
-			}
-			.prose {
-				width: 720px;
-				max-width: calc(100% - 2em);
-				margin: auto;
-				padding: 1em;
-				color: rgb(var(--gray-dark));
-			}
-			.title {
-				margin-bottom: 1em;
-				padding: 1em 0;
-				text-align: center;
-				line-height: 1;
-			}
-			.title h1 {
-				margin: 0 0 0.5em 0;
-			}
-			.date {
-				margin-bottom: 0.5em;
-				color: rgb(var(--gray));
-			}
-			.last-updated-on {
-				font-style: italic;
-			}
-		</style>
 	</head>
 
 	<body>
@@ -63,24 +31,241 @@ const { title, description, pubDate, updatedDate, heroImage } = Astro.props;
 					{heroImage && <Image width={1020} height={510} src={heroImage} alt="" />}
 				</div>
 				<div class="prose">
-					<div class="title">
+					<div class="article-header">
 						<div class="date">
 							<FormattedDate date={pubDate} />
 							{
 								updatedDate && (
-									<div class="last-updated-on">
-										Last updated on <FormattedDate date={updatedDate} />
-									</div>
+									<span class="updated">
+										（更新: <FormattedDate date={updatedDate} />）
+									</span>
 								)
 							}
 						</div>
 						<h1>{title}</h1>
-						<hr />
 					</div>
-					<slot />
+					<div class="article-content">
+						<slot />
+					</div>
 				</div>
 			</article>
+
+			<section class="support">
+				<div class="support-inner">
+					<p>この記事が役に立ったら ☕</p>
+					<a href="https://buymeacoffee.com/1622515b5" target="_blank" class="coffee-btn">
+						コーヒーを一杯おごる
+					</a>
+				</div>
+			</section>
+
+			{relatedPosts.length > 0 && (
+				<section class="related">
+					<div class="related-inner">
+						<h2>📚 あわせて読みたい</h2>
+						<div class="related-grid">
+							{relatedPosts.map((post) => (
+								<a href={`/blog/${post.id}/`} class="related-card">
+									<span class="related-date">
+										<FormattedDate date={post.data.pubDate} />
+									</span>
+									<h3>{post.data.title}</h3>
+									<span class="related-link">読む →</span>
+								</a>
+							))}
+						</div>
+					</div>
+				</section>
+			)}
 		</main>
 		<Footer />
 	</body>
 </html>
+
+<style>
+	main {
+		width: 100%;
+		max-width: 100%;
+		margin: 0;
+	}
+	
+	.hero-image {
+		width: 100%;
+		max-width: 800px;
+		margin: 0 auto;
+		padding: 0 1.5rem;
+	}
+	
+	.hero-image img {
+		display: block;
+		width: 100%;
+		border-radius: var(--radius-md);
+	}
+	
+	.prose {
+		width: 100%;
+		max-width: 700px;
+		margin: 0 auto;
+		padding: 2rem 1.5rem;
+	}
+	
+	.article-header {
+		margin-bottom: 2rem;
+		padding-bottom: 1.5rem;
+		border-bottom: 1px solid var(--border);
+	}
+	
+	.date {
+		font-size: 0.9rem;
+		color: var(--text-muted);
+		margin-bottom: 0.75rem;
+	}
+	
+	.updated {
+		color: var(--text-muted);
+	}
+	
+	.article-header h1 {
+		font-size: 2rem;
+		line-height: 1.3;
+		margin: 0;
+	}
+	
+	.article-content {
+		font-size: 1.05rem;
+		line-height: 1.8;
+	}
+	
+	.article-content :global(h2) {
+		margin-top: 2.5rem;
+		margin-bottom: 1rem;
+		font-size: 1.5rem;
+	}
+	
+	.article-content :global(h3) {
+		margin-top: 2rem;
+		margin-bottom: 0.75rem;
+		font-size: 1.25rem;
+	}
+	
+	.article-content :global(p) {
+		margin-bottom: 1.5rem;
+	}
+	
+	.article-content :global(ul),
+	.article-content :global(ol) {
+		margin-bottom: 1.5rem;
+		padding-left: 1.5rem;
+	}
+	
+	.article-content :global(li) {
+		margin-bottom: 0.5rem;
+	}
+	
+	/* Support Section */
+	.support {
+		margin-top: 3rem;
+		padding: 2rem 1.5rem;
+		text-align: center;
+	}
+	
+	.support-inner {
+		max-width: 400px;
+		margin: 0 auto;
+		padding: 2rem;
+		background: var(--surface);
+		border: 1px solid var(--border);
+		border-radius: var(--radius-md);
+	}
+	
+	.support-inner p {
+		margin: 0 0 1rem;
+		font-size: 1rem;
+		color: var(--text-secondary);
+	}
+	
+	.coffee-btn {
+		display: inline-block;
+		padding: 0.75rem 1.5rem;
+		background: var(--accent);
+		color: white;
+		font-weight: 600;
+		border-radius: var(--radius-sm);
+		text-decoration: none;
+		transition: all 0.2s ease;
+	}
+	
+	.coffee-btn:hover {
+		background: var(--accent-hover);
+		color: white;
+		transform: translateY(-1px);
+	}
+	
+	/* Related Posts */
+	.related {
+		margin-top: 3rem;
+		padding: 3rem 1.5rem;
+		background: var(--accent-light);
+	}
+	
+	.related-inner {
+		max-width: 800px;
+		margin: 0 auto;
+	}
+	
+	.related h2 {
+		font-size: 1.25rem;
+		margin-bottom: 1.5rem;
+		text-align: center;
+	}
+	
+	.related-grid {
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+		gap: 1rem;
+	}
+	
+	.related-card {
+		display: block;
+		padding: 1.25rem;
+		background: var(--surface);
+		border: 1px solid var(--border);
+		border-radius: var(--radius-md);
+		text-decoration: none;
+		transition: all 0.2s ease;
+	}
+	
+	.related-card:hover {
+		border-color: var(--accent);
+		transform: translateY(-2px);
+		box-shadow: var(--shadow-md);
+	}
+	
+	.related-date {
+		font-size: 0.75rem;
+		color: var(--text-muted);
+	}
+	
+	.related-card h3 {
+		margin: 0.5rem 0;
+		font-size: 1rem;
+		color: var(--text-primary);
+		line-height: 1.4;
+	}
+	
+	.related-link {
+		font-size: 0.85rem;
+		color: var(--accent);
+		font-weight: 500;
+	}
+	
+	@media (max-width: 720px) {
+		.article-header h1 {
+			font-size: 1.5rem;
+		}
+		
+		.related-grid {
+			grid-template-columns: 1fr;
+		}
+	}
+</style>
