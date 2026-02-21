@@ -164,11 +164,11 @@ const posts = (await getCollection('blog')).sort(
 		margin-top: 0.25rem;
 	}
 	
-	/* Visual illustration area (right side) */
+	/* Visual illustration area (right side) - 16:9 aspect ratio */
 	.post-visual {
 		flex-shrink: 0;
-		width: 100px;
-		height: 100px;
+		width: 120px;
+		height: 68px;
 		border-radius: var(--radius-sm);
 		overflow: hidden;
 		background: var(--bg);
@@ -180,7 +180,7 @@ const posts = (await getCollection('blog')).sort(
 	.post-thumbnail {
 		width: 100%;
 		height: 100%;
-		object-fit: contain;
+		object-fit: cover;
 	}
 	
 	/* Desktop: larger visual */
@@ -199,8 +199,8 @@ const posts = (await getCollection('blog')).sort(
 		}
 		
 		.post-visual {
-			width: 120px;
-			height: 120px;
+			width: 160px;
+			height: 90px;
 		}
 	}
 	
