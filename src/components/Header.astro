@@ -1,13 +1,13 @@
 ---
 import { SITE_TITLE } from '../consts';
 import HeaderLink from './HeaderLink.astro';
+import sukimaLogo from '../assets/logos/sukima-ai.png';
 ---
 
 <header>
 	<nav>
 		<a href="/" class="logo">
-			<span class="site-name">{SITE_TITLE}</span>
-			<span class="site-tagline">通勤時間で身につく、実践AIスキル</span>
+			<img src={sukimaLogo.src} alt={SITE_TITLE} class="logo-image" />
 		</a>
 		<div class="nav-links">
 			<HeaderLink href="/">ホーム</HeaderLink>
@@ -54,26 +54,24 @@ import HeaderLink from './HeaderLink.astro';
 	
 	.logo {
 		display: flex;
-		flex-direction: column;
+		align-items: center;
 		text-decoration: none;
-		gap: 0.1rem;
 	}
 	
-	.site-name {
-		font-size: 1.1rem;
-		font-weight: 700;
-		color: var(--text-primary);
-		letter-spacing: -0.02em;
+	.logo-image {
+		height: 40px;
+		width: auto;
+		transition: opacity 0.2s ease;
 	}
 	
-	.site-tagline {
-		font-size: 0.75rem;
-		color: var(--text-muted);
-		font-weight: 400;
+	.logo:hover .logo-image {
+		opacity: 0.8;
 	}
 	
-	.logo:hover .site-name {
-		color: var(--accent);
+	@media (max-width: 480px) {
+		.logo-image {
+			height: 32px;
+		}
 	}
 	
 	.nav-links {
